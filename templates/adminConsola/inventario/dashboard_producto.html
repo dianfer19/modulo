@@ -1,0 +1,353 @@
+{% extends "base.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% block titulo %}Erp-Dbjsystem{% endblock %}
+{% block title %}Mantenimiento de Productos{% endblock %}
+{% block Css %}
+<!--Tablas-->
+<link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+<!--Select-->
+<link rel="stylesheet" href="{% static 'plugins/select2/css/select2.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css' %}">
+{% endblock %}
+{% block content %}
+{% load bootstrap5 %}
+<div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">En esta opción podrá añadir editar eliminar los productos</h3>
+              </div>
+                  {% for message in messages %}
+                     {% if message.tags == "error" %}
+                        <div class="alert alert-danger alert-dismissible">
+                                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                  <h5><i class="icon fas fa-ban"></i>  {{ message }} !</h5>
+                         </div>
+                     {% else %}
+                         <div class="alert alert-info alert-dismissible bg-primary">
+                                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                  <h5><i class="icon fas fa-check"></i>  {{ message }} !</h5>
+                         </div>
+                     {% endif %}
+                {% endfor %}
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="tablaMant" class="table display table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>#
+                         {% if producto.count <= 0 %}
+                            <button type="button"  class="btn btn-default bg-primary" data-toggle="modal" data-target="#modal-lg">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        {% endif %}
+                    </th>
+                    <th>Código</th>
+                    <th>Descripcion</th>
+                    <th>Info</th>
+                    <th>Tipo de Producto</th>
+                    <th>Precio Compra</th>
+                    <th>Precio Técnico</th>
+                    <th>Precio Venta</th>
+                    <th style="text-align:center">Estado</th>
+                    <th style="text-align:center" class="no-print">
+                        Acción
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                   {% for item in producto %}
+                      <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{ item.codigo}}</td>
+                        <td>{{ item.nombre }}</td>
+                        <td>{{ item.descripcion }}</td>
+                        <td>{{ item.id_tipo_producto }}</td>
+                        <td>{{ item.precio_compra }}</td>
+                        <td>{{ item.precio_tecnico }}</td>
+                        <td>{{ item.precio }}</td>
+                        <td style="text-align:center" >
+                            {% if item.estado %}
+                                <input type="checkbox" disabled="true" data-on="Activo" checked data-off="Inactivo."  data-toggle="toggle">
+                            {% else %}
+                                <input type="checkbox" disabled="true"  data-on="Activo" data-off="Inactivo."  data-toggle="toggle">
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center" class="no-print">
+                             <form id="updtipo{{ item.id }}" name="mant" method="POST" action="{% url 'mantenimiento_producto' %}" enctype="multipart/form-data">
+                                 {% csrf_token %}
+                                 <input type="hidden" name="id_producto" value="{{ item.id }}" >
+                                 <input type="hidden" name="codigo" value="{{ item.codigo }}" >
+                                 <input type="hidden" name="nombre" value="{{ item.nombre }}" >
+                                 <input type="hidden" name="descripcion" value="{{ item.descripcion }}" >
+                                 <input type="hidden" name="unidad" value="{{ item.unidad }}" >
+                                 <input type="hidden" name="precio" value="{{ item.precio }}" >
+                                 <input type="hidden" name="precio_compra" value="{{ item.precio_compra }}" >
+                                 <input type="hidden" name="precio_tecnico" value="{{ item.precio_tecnico }}" >
+                                 <input type="hidden" name="id_tipo_producto" value="{{ item.id_tipo_producto.id }}" >
+                                    <button type="button" class="btn btn-default bg-primary" data-toggle="modal" data-target="#modal-lg">
+                                       <i class="fas fa-plus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-default  bg-warning" data-toggle="modal" data-target="#modal-lg{{ item.id }}">
+                                       <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button  name="Delete" type="submit" class="btn btn-default bg-danger">
+                                       <i class="fas fa-trash"></i>
+                                    </button>
+                             </form>
+                        </td>
+
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                  {% for item in producto %}
+                    <form  method="POST" action="{% url 'mantenimiento_producto' %}" onsubmit="$('#cargando').modal('show');" enctype="multipart/form-data">
+                       {% csrf_token %}
+                      <div class="modal fade" id="modal-lg{{ item.id }}">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                   <div class="row" style="text-align:left">
+                                      <!-- left column -->
+                                      <div class="col-md-12">
+                                        <div class="card card-primary p-0">
+                                      <div class="card-header">
+                                        <h3 class="card-title">Modificación de Producto </h3>
+                                      </div>
+                                         <!-- /.card-header -->
+                                        <div class="card-body">
+                                            <div class="row">
+	                                            <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Código</label>
+                                                        <input type="text" name="codigo" value="{{ item.codigo}}" class="form-control form-control-sm" readonly="true"  placeholder="Código" required>
+                                                        <label>Nombre</label>
+                                                        <input required name="nombre" class="form-control form-control-sm" value="{{ item.nombre}}"  type="text" placeholder="Nombre">
+                                                        <label>Más Info</label>
+                                                        <input required name="descripcion" class="form-control form-control-sm" value="{{ item.descripcion}}"  type="text" placeholder="Más Info">
+                                                      </div>
+                                                      <div class="input-group">
+                                                          <div class="custom-file" >
+                                                            <input type="file" class="custom-file-input" id="imagen{{ item.id }}" name="imagen">
+                                                            <label class="custom-file-label"  for="imagen{{ item.id }}">Elija un archivo</label>
+                                                          </div>
+
+                                                      </div>
+                                                      <div class="input-group">
+                                                        <div class="custom-file">
+                                                        <input type="file"  class="custom-file-input" id="imagen1{{ item.id }}" name="imagen1">
+                                                        <label class="custom-file-label" for="imagen1{{ item.id }}">Elija un archivo</label>
+                                                        </div>
+                                                      </div>
+                                                      <div class="input-group">
+                                                        <div class="custom-file">
+                                                        <input type="file" class="custom-file-input" id="imagen2{{ item.id }}" name="imagen2">
+                                                        <label class="custom-file-label" for="imagen2{{ item.id }}">Elija un archivo</label>
+                                                        </div>
+                                                      </div>
+
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                      <label>Tipo de Producto</label>
+                                                      <select required class="form-control select2bs4" name="id_tipo_producto" style="width: 100%;">
+                                                          <option selected value="{{ item.id_tipo_producto.id}}"> {{  item.id_tipo_producto}}</option>
+                                                          {% for item1 in cmb_tipo %}
+                                                            <option value="{{ item1.id }}">{{ item1.descripcion }}</option>
+                                                         {% endfor %}
+                                                      </select>
+                                                      <label>Unidad Producto</label>
+                                                      <select required class="form-control select2bs4" name="unidad" style="width: 100%;">
+                                                          <option  selected value="{{item.unidad}}"> {{item.get_unidad_display }}</option>
+                                                          {% for item2 in cmb_unidad %}
+                                                            <option value="{{ item2.0}}">{{ item2.1 }}</option>
+                                                         {% endfor %}
+                                                      </select>
+                                                      <label>Precio Compra</label>
+                                                      <input type='number' class="form-control form-control-sm" name="precio_compra" value='{{ item.precio_compra }}'  step='0.01' placeholder='0.00' />
+                                                      <label>Precio Técnico</label>
+                                                      <input type='number' class="form-control form-control-sm" name="precio_tecnico" value='{{ item.precio_tecnico }}'  step='0.01' placeholder='0.00' />
+                                                        <label>Precio Venta</label>
+                                                      <input type='number' class="form-control form-control-sm" name="precio" value='{{ item.precio }}'  step='0.01'  placeholder='0.00' />
+                                                       <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" title="Iva" {% if item.iva %}checked {% endif %}
+                                                               class="custom-control-input" name="iva" id="iva{{ item.id }}" >
+                                                        <label for="iva{{ item.id }}" class="custom-control-label">Iva</label>
+                                                      </div>
+                                                      <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" title="Estado" {% if item.estado %}checked {% endif %}
+                                                               class="custom-control-input" name="estado" id="estado{{ item.id }}" >
+                                                        <label for="estado{{ item.id }}" class="custom-control-label">Estado</label>
+                                                      </div>
+                                                    </div>
+                                                    <!-- /.form-group -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                <!-- /.card-body -->
+                                <div class="modal-footer ">
+                                    <input type="hidden" name="id_producto" value="{{ item.id }}" >
+                                    <button type="submit"  name="Update" class="btn btn-primary">Guardar</button>
+                                    <button type="button" class="btn bg-danger" data-dismiss="modal">Cerrar</button>
+                                </div>
+                                 </div>
+                                      </div>
+                                   </div>
+
+                              </div>
+                              <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+                      </div>
+                  </form>
+                  {% endfor %}
+                <form  method="POST" action="{% url 'mantenimiento_producto' %}" onsubmit="$('#cargando').modal('show');" enctype="multipart/form-data">
+                       {% csrf_token %}
+                      <div class="modal fade" id="modal-lg">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                   <div class="row" style="text-align:left">
+                                      <!-- left column -->
+                                      <div class="col-md-12">
+                                        <div class="card card-primary p-0">
+                                      <div class="card-header">
+                                        <h3 class="card-title">Registro de Producto</h3>
+                                      </div>
+                                         <!-- /.card-header -->
+                                        <div class="card-body">
+                                            <div class="row">
+	                                            <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <label>Código</label>
+                                                        <input required name="codigo" class="form-control form-control-sm" value=""  type="text" placeholder="Código">
+                                                        <label>Nombre</label>
+                                                        <input required name="nombre" class="form-control form-control-sm" value=""  type="text" placeholder="Nombre">
+                                                        <label>Más Info</label>
+                                                        <input required name="descripcion" class="form-control form-control-sm" value=""  type="text" placeholder="Más Info">
+                                                      </div>
+                                                    <div class="input-group">
+                                                      <div class="custom-file">
+                                                        <input type="file"   class="custom-file-input" id="imagen" name="imagen" data-buttonText="Hello there, pick your files" >
+                                                        <label class="custom-file-label" for="imagen">Elija un archivo</label>
+                                                      </div>
+                                                      <div class="input-group">
+                                                        <div class="custom-file">
+                                                        <input type="file" class="custom-file-input" id="imagen1" name="imagen1">
+                                                        <label class="custom-file-label" for="imagen1">Elija un archivo</label>
+                                                        </div>
+                                                      </div>
+                                                      <div class="input-group">
+                                                        <div class="custom-file">
+                                                        <input type="file" class="custom-file-input" id="imagen2" name="imagen2">
+                                                        <label class="custom-file-label" for="imagen2">Elija un archivo</label>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                      <label>Tipo de Producto</label>
+                                                      <select required class="form-control select2bs4" name="id_tipo_producto" style="width: 100%;">
+                                                          <option disabled selected value=""> Seleccione un tipo </option>
+                                                          {% for item in cmb_tipo %}
+                                                            <option value="{{ item.id }}">{{ item.descripcion }}</option>
+                                                         {% endfor %}
+                                                      </select>
+                                                      <label>Unidad Producto</label>
+                                                      <select required class="form-control select2bs4" name="unidad" style="width: 100%;">
+                                                          <option disabled selected value=""> Seleccione Unidad </option>
+                                                          {% for item in cmb_unidad %}
+                                                            <option value="{{ item.0}}">{{ item.1 }}</option>
+                                                         {% endfor %}
+                                                      </select>
+                                                      <label>Precio Compra</label>
+                                                      <input type='number' class="form-control form-control-sm" name="precio_compra" step='0.01' value='0.00' placeholder='0.00' />
+                                                      <label>Precio Técnico</label>
+                                                      <input type='number' class="form-control form-control-sm" name="precio_tecnico" step='0.01' value='0.00' placeholder='0.00' />
+                                                        <label>Precio Venta</label>
+                                                      <input type='number' class="form-control form-control-sm" name="precio" step='0.01' value='0.00' placeholder='0.00' />
+                                                       <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" min="0.01" title="Iva" {% if item.estado %}checked {% endif %}
+                                                               class="custom-control-input" name="iva"  id="iva" >
+                                                        <label for="iva" class="custom-control-label">Iva</label>
+                                                      </div>
+                                                      <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" title="Estado" {% if item.estado %}checked {% endif %}
+                                                               class="custom-control-input" name="estado" id="estado" >
+                                                        <label for="estado" class="custom-control-label">Estado</label>
+                                                      </div>
+                                                    </div>
+                                                    <!-- /.form-group -->
+                                                </div>
+                                            </div>
+                                        </div>
+                                <!-- /.card-body -->
+                                <div class="modal-footer ">
+                                    <button type="submit"  name="Add" class="btn btn-primary">Guardar</button>
+                                    <button type="button" class="btn bg-danger" data-dismiss="modal">Cerrar</button>
+                                </div>
+                                 </div>
+                                      </div>
+                                   </div>
+
+                              </div>
+                              <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+                      </div>
+                  </form>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+<!--    modal loading onsubmit="$('#cargando').modal('show');"-->
+    <div id="cargando" class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+           <div class="text-center">
+                  <button class="btn btn-warning" type="button" disabled>
+                      <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                      Procesando...
+                    </button>
+           </div>
+        </div>
+    </div>
+<!--fin modal-->
+{% endblock %}
+{% block scripts %}
+<!--Tablas-->
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<!--Select-->
+<script src="{% static 'plugins/select2/js/select2.full.min.js' %}"></script>
+<!-- bs-custom-file-input -->
+<script src="{% static 'plugins/bs-custom-file-input/bs-custom-file-input.min.js' %}"></script>
+<script src="{% static 'js/datatable/erp-datatable.js' %}"></script>
+<script>
+    $(function () {
+    //Initialize Select2 Elements
+    $('.select2').select2()
+
+    //Initialize Select2 Elements
+    $('.select2bs4').select2({
+      theme: 'bootstrap4'
+    })
+})
+
+</script>
+{% endblock %}

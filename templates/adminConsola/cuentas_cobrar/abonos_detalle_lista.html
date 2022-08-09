@@ -1,0 +1,106 @@
+{% extends "listas.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% block dashboard %}
+{% for data in lista %}
+{{ data.secuencial}}
+{% endfor %}
+<div class="card col-lg-6 card-primary">
+    <div class="card-header border-0">
+        <h3 class="card-title">Cuenta por Cobrar # {{ cabecera.id|stringformat:"06d"}} - {{ cabecera.id_cliente.razon_social}}</h3>
+    </div>
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
+            <p class="text-success text-xl">
+                <i class="ion ion-ios-refresh-empty"></i>
+            </p>
+            <p class="d-flex flex-column text-right">
+                    <span class="font-weight-bold">
+                      <i class="ion ion-android-arrow-up text-success"></i>
+                        {{ cabecera.cubierto|default:"0"}}
+                    </span>
+                <span class="text-muted">Abonos</span>
+            </p>
+        </div>
+         <div class="d-flex justify-content-between align-items-center mb-0">
+            <p class="text-danger text-xl">
+                <i class="ion ion-ios-refresh-empty"></i>
+            </p>
+            <p class="d-flex flex-column text-right">
+                    <span class="font-weight-bold">
+                      <i class="ion ion-android-arrow-down text-danger"></i>
+                        {{ cabecera.total|default:"0"}}
+                    </span>
+                <span class="text-muted">Total de Cuenta</span>
+            </p>
+        </div>
+        <!-- /.d-flex -->
+        <div class="d-flex justify-content-between align-items-center border-bottom mb-3">
+            <p class="text-warning text-xl">
+                <i class="ion ion-ios-cart-outline"></i>
+            </p>
+            <p class="d-flex flex-column text-right">
+                    <span class="font-weight-bold">
+                      <i class="ion ion-android-arrow-up text-warning"></i>
+                        {{ cabecera.saldo|default:"0"}}
+                    </span>
+                <span class="text-muted">Saldo</span>
+            </p>
+        </div>
+        <!-- /.d-flex -->
+
+        <!-- /.d-flex -->
+    </div>
+</div>
+{% endblock %}
+{% block columns %}
+<tr>
+    <th>Secuencial</th>
+    <th>Forma de Pago</th>
+    <th>Concepto</th>
+    <th>Valor</th>
+    <th>Cuota</th>
+    <th>Fecha</th>
+</tr>
+
+{% endblock %}
+{% block buttons_list %}
+<a href="{{ nuevo }}" class="btn btn-primary btn-flat btnTest">
+       <i class="fas fa-plus"></i> Nuevo registro
+</a>
+<a onclick="history.go(0)" class="btn btn-success btn-flat no-print">
+    <i class="fas fa-sync"></i> Actualizar
+</a>
+<a href="{{ list_url }}" class="btn btn-danger btn-flat no-print">
+    <i class="fas fa-times"></i> Regresar
+</a>
+<a onclick="window.print();" rel="noopener" target="_blank" class="btn btn-primary no-print"><i class="fas fa-print"></i>
+    Print</a>
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<script src="{% static 'js/datatable/abonodetalle.js' %}"></script>
+
+{% for message in messages %}
+{% if message.tags == "error" %}
+<script>
+Swal.fire({
+  icon: 'error',
+  title: 'Error...',
+  text:  '{{ message|escape }}',
+})
+</script>
+{% endif %}
+{% endfor %}
+{% endblock %}

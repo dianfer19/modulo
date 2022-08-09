@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% block titulo %}Erp-Dbjsystem{% endblock %}
+{% block title %}Visiualización de Ordenes{% endblock %}
+{% block Css %}
+  <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+{% endblock %}
+{% block content %}
+{% load bootstrap5 %}
+<div class="row">
+          <div class="col-12">
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">En esta opción podrá visualizar ordenes en las cuales se haya pedido su producto y modificar el estado de la orden </h3>
+              </div>
+                 {% for message in messages %}
+                     {% if message.tags == "error" %}
+                        <div class="alert alert-danger alert-dismissible">
+                                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                  <h5><i class="icon fas fa-ban"></i>  {{ message }} !</h5>
+                         </div>
+                     {% else %}
+                         <div class="alert alert-info alert-dismissible bg-primary">
+                                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                  <h5><i class="icon fas fa-check"></i>  {{ message }} !</h5>
+                         </div>
+                     {% endif %}
+                {% endfor %}
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="tablaMant" class="table display table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>Orden</th>
+                    <th>Usuario</th>
+                    <th>Estado</th>
+                    <th scope="col" style=" text-align: right!important;">Cant</th>
+                    <th scope="col" style=" text-align: right!important;">Iva</th>
+                    <th scope="col" style=" text-align: right!important;">Total</th>
+                    <th style="text-align:center">Fecha</th>
+                    <th style="text-align:center">Acción</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                   {% for item in ordenes %}
+                      <tr {% if item.estado == "OE" %} data-original-title="999" data-container="body" data-toggle="tooltip" data-placement="bottom"
+                        title="Orden Entrgada no puede modificarse" class="bg-success" {% endif %}>
+                        <td>{{ item.id|stringformat:"06d" }}</td>
+                        <td>{{ item.razon_social }}</td>
+                        <td>{{ item.get_estado_display  }}</td>
+                        <td style=" text-align: right!important;">{{ item.cantidad_total }}</td>
+                        <td style=" text-align: right!important;">${{ item.iva_total }}</td>
+                        <td style=" text-align: right!important;">${{ item.total }}</td>
+                        <td >{{ item.fecha_orden|date:"m/d/Y" }}</td>
+                        <td style="text-align:center">
+                            <div class="row">
+                            <form  method="post" action="#" >
+                                {% csrf_token %}
+                                <input type="hidden" name="id_inventario" value="{{ item.id }}" >
+                                <button {% if item.estado == "OE" %} disabled  {% endif %}type="button" class="btn btn-default bg-warning" data-toggle="modal" data-target="#modal-lg{{ item.id }}">
+                                   <i class="fas fa-edit"></i>
+                                </button>
+                            </form>
+                            <form  method="post" action="{% url 'visualizacion_orden' %}"  >
+                                        {% csrf_token %}
+                                        <input type="hidden" name="id_orden" value="{{ item.id }}" >
+                                        <button type="submit" class="btn btn-default bg-primary" formtarget="_blank" >
+                                           <i class="fas fa-eye"></i>
+                                        </button>
+                            </form></div>
+
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                  {% for item in ordenes %}
+                  <form  name="mant" method="POST" action="{% url 'mantenimiento_orden' %}" onsubmit="$('#cargando').modal('show');" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <input type="hidden" name="id_orden" value="{{ item.id }}" >
+                      <input type="hidden" name="fecha_orden" value="{{ item.fecha_orden |date:'Y-m-d' }}" >
+                      <div class="modal fade" id="modal-lg{{ item.id }}">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                        <div class="row" style="text-align:left">
+                                          <!-- left column -->
+                                            <div class="col-md-12">
+                                                <div class="card card-primary p-0">
+                                                    <div class="card-header">
+                                                        <h3 class="card-title">Cambio de estado de la orden</h3>
+                                                    </div>
+                                                 <!-- /.card-header -->
+                                                    <div class="card-body">
+                                                        <div class="row">
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                    <label>Orden</label>
+                                                                    <input type="text" name="id" value="{{ item.id|stringformat:'06d' }}" class="form-control form-control-sm" readonly="true"  required>
+                                                                    <label>Razón Social</label>
+                                                                    <input required name="razon_social" class="form-control form-control-sm" value="{{ item.razon_social }}" readonly="true"  type="text" >
+                                                                    <label>Teléfono</label>
+                                                                    <input required name="cellphone" class="form-control form-control-sm" value="{{ item.cellphone}}" readonly="true"  type="text" >
+                                                                    <label>Email</label>
+                                                                    <input required name="email" class="form-control form-control-sm" value="{{ item.email}}" readonly="true"  type="text" >
+                                                                    <label>Fecha</label>
+                                                                    <input required  class="form-control form-control-sm" value="{{ item.fecha_orden}}" readonly="true"  type="text" >
+                                                                  </div>
+                                                            </div>
+                                                            <div class="col-md-6">
+                                                                <div class="form-group">
+                                                                  <label>Dirección</label>
+                                                                  <input required name="address" class="form-control form-control-sm" value="{{ item.address}}" readonly="true"  type="text" >
+                                                                  <label>Referencia</label>
+                                                                  <input  name="reference" class="form-control form-control-sm" value="{{ item.reference|default_if_none:''}}" readonly="true"  type="text" >
+                                                                  <label>Dirección Alternativa</label>
+                                                                  <input  name="direccion_alternativa" class="form-control form-control-sm" value="{{ item.direccion_alternativa|default_if_none:''}}"   type="text" >
+                                                                  <label>Observación</label>
+                                                                  <input  name="observacion_delivery" class="form-control form-control-sm" value="{{ item.observacion_delivery|default_if_none:''}}"   type="text" >
+                                                                  <label>Tipo de Producto</label>
+                                                                  <select required class="form-control select2bs4" name="estado" style="width: 100%;">
+                                                                      <option disabled selected value="{{ item.estado}}">  {{item.get_estado_display }}</option>
+                                                                     {% for key, value in cmb_estados.items %}
+                                                                        <option value="{{key}}">{{ value }}</option>
+                                                                     {% endfor %}
+                                                                  </select>
+
+
+                                                                </div>
+                                                                <!-- /.form-group -->
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- /.card-body -->
+                                                <div class="modal-footer ">
+                                                      <button type="submit" name="Update"  class="btn btn-primary">Guardar</button>
+                                                      <button type="button" class="btn bg-danger" data-dismiss="modal">Cerrar</button>
+                                                    </div>
+                                            </div>
+                                        </div>
+                              </div>
+                            </div>
+                              <!-- /.modal-content -->
+                      </div>
+                            <!-- /.modal-dialog -->
+
+                  </form>
+                  {% endfor %}
+
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+</div>
+
+<!--    modal loading onsubmit="$('#cargando').modal('show');"-->
+    <div id="cargando" class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+           <div class="text-center">
+                  <button class="btn btn-warning" type="button" disabled>
+                      <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                      Procesando...
+                    </button>
+           </div>
+        </div>
+    </div>
+<!--fin modal-->
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<script src="{% static 'js/datatable/erp-datatable.js' %}"></script>
+{% endblock %}

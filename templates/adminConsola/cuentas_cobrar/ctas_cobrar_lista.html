@@ -1,0 +1,102 @@
+{% extends "listas.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% load crispy_forms_tags %}
+{% block dashboard %}
+<div class="row">
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-info">
+            <div class="inner">
+                <h3>{{ recibido }}</h3>
+                <p>Generadas</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+            </div>
+            <a href="#" onclick="filtro_estado('A')" class="small-box-footer">Más info<i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-danger">
+            <div class="inner">
+                <h3>{{ proceso }}</h3>
+
+                <p>Vencidas</p>
+            </div>
+            <div class="icon">
+                <i class="fas fa-tools"></i>
+            </div>
+            <a href="#" onclick="filtro_estado('B')"class="small-box-footer">Más info<i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+    <!-- ./col -->
+    <div class="col-lg-3 col-6">
+        <!-- small box -->
+        <div class="small-box bg-warning">
+            <div class="inner">
+                <h3>{{ reparado }}</h3>
+
+                <p>Pagadas</p>
+            </div>
+            <div class="icon">
+                <i class="far fa-envelope"></i>
+            </div>
+            <a href="#" onclick="filtro_estado('C')" class="small-box-footer">Más info<i class="fas fa-arrow-circle-right"></i></a>
+        </div>
+    </div>
+
+    <!-- ./col -->
+</div>
+{% endblock %}
+{% block columns %}
+<tr>
+    <th>#</th>
+    <th>Cliente</th>
+    <th>Documento</th>
+    <th>Cuota</th>
+    <th>Fecha</th>
+    <th>Fecha de Vencimiento</th>
+    <th>Total</th>
+    <th>Cubierto</th>
+    <th>Saldo</th>
+    <th style="text-align:center">Estado</th>
+    <th class="d-print-none" style="text-align:center">
+        Acción
+    </th>
+</tr>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<script src="{% static 'js/datatable/ctascobrar.js' %}"></script>
+
+
+{% for message in messages %}
+{% if message.tags == "error" %}
+<script>
+Swal.fire({
+  icon: 'error',
+  title: 'Error...',
+  text:  '{{ message|escape }}',
+
+})
+</script>
+{% endif %}
+{% endfor %}
+
+{% endblock %}
+

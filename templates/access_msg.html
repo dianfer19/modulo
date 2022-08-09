@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+{% load bootstrap5 %}
+<div class="card shadow mb-4">
+	<div class="card-header py-3">
+		<h6 class="m-0 font-weight-bold text-primary">Información ERP</h6>
+	</div>
+	<div class="card-body">
+		<div class="text-center">
+			<img class="img-fluid px-6 px-sm-8 mt-6 mb-8" style="width: 25rem;" src="{% static 'media/images/undraw_authentication_fsn5.svg' %}" alt="">
+		</div>
+		<div class="text-center">
+			<p>Acceder a la busqueda de productos, accede o registrate!</p>
+			<a class="btn btn-primary btn-icon-split" href="{% url 'signup' %}">
+				<span class="icon text-white-50">
+					<i class="fas fa-check"></i>
+				</span>
+				<span class="text">Registrarse</span>
+			</a>
+            </p>
+
+            <a class="btn btn-light btn-icon-split" href="{% url 'login' %}">
+                <span class="icon text-gray-600">
+                    <i class="fas fa-arrow-right"></i>
+                </span>
+                <span class="text">Login</span>
+            </a>
+        </div>
+	</div>
+</div>
+{% endblock %}

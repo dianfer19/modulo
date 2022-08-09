@@ -1,0 +1,21 @@
+{% extends "formulario.html" %}
+{% block scriptsForm %}
+$('#fecha').datetimepicker({
+         format: 'YYYY-MM-DD',
+        locale: 'es',
+        language: 'es',
+    });
+
+old_value = $('select[name="id_factura"]').val();
+$('select[name="id_factura"]').change(function() {
+console.log("Change")
+    $(this).val(old_value);
+return;
+});
+old_valueC = $('select[name="id_cliente"]').val();
+$('select[name="id_cliente"]').change(function() {
+console.log("Change")
+    $(this).val(old_valueC);
+return;
+});
+{% endblock %}

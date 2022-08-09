@@ -1,0 +1,229 @@
+{% extends "formulario.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-chart-bar"></i>
+             Reportes del Sistema
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ recibido }}</h3>
+                        <p>Servicio Técnico</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <a href="/administracion/reporte_servicio_tecnico/" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{ proceso }}</h3>
+
+                        <p>Gastos Diarios</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-money-check-alt"></i>
+                    </div>
+                    <a href="/administracion/reporte_gastos_varios/" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{ reparado }}</h3>
+
+                        <p>Facturas Generadas</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-cash-register"></i>
+                    </div>
+                    <a href="/administracion/reporte_facturas/" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success ">
+                    <div class="inner">
+                        <h3>{{ retirado }}</h3>
+                        <p>Inventario</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <a href="/administracion/reporte_inventario/" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3></h3>
+                        <p>Clientes y Usuarios</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <a href="/administracion/reporte_usuario/" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3></h3>
+
+                        <p>Pedidos Guayaquil</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-money-check-alt"></i>
+                    </div>
+                    <a href="/administracion/reporte_pedidos/"  class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{ reparado }}</h3>
+
+                        <p>Detalle Facturas</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-file-invoice"></i>
+                    </div>
+                    <a href="#" class="small-box-footer">Más info<i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success ">
+                    <div class="inner">
+                        <h3>{{ retirado }}</h3>
+                        <p>Kardex</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-dolly"></i>
+                    </div>
+                    <a href="#" onclick="filtro_estado('E')" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3>{{ recibido }}</h3>
+                        <p>Tipo Fallos</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-toolbox"></i>
+                    </div>
+                    <a href="#" onclick="filtro_estado('A')" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3>{{ proceso }}</h3>
+
+                        <p>Impresión Compras</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-print"></i>
+                    </div>
+                    <a href="#" onclick="filtro_estado('B')" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3>{{ reparado }}</h3>
+
+                        <p>Impresión Facturas</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-print"></i>
+                    </div>
+                    <a href="#" onclick="filtro_estado('C')" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success ">
+                    <div class="inner">
+                        <h3>{{ retirado }}</h3>
+                        <p>Productos</p>
+                    </div>
+                    <div class="icon">
+                        <i class="ion ion-bag"></i>
+                    </div>
+                    <a href="/administracion/reporte_producto/" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+
+
+
+
+{% for message in messages %}
+{% if message.tags == "error" %}
+<script>
+Swal.fire({
+  icon: 'error',
+  title: 'Error...',
+  text:  '{{ message|escape }}',
+
+})
+</script>
+{% endif %}
+{% endfor %}
+
+{% endblock %}
+

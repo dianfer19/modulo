@@ -1,0 +1,166 @@
+{% extends "formulario.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="card card-primary">
+    <div class="card-header">
+        <h3 class="card-title">
+            <i class="fas fa-chart-line"></i>
+            Opciones del Sistema
+             <i class="fas fa-star"></i>
+        </h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3></h3>
+                        <p>Servicio Técnico</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <a href="{% url 'servicios_lista' %}" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3></h3>
+
+                        <p>Gastos Diarios</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-money-check-alt"></i>
+                    </div>
+                    <a href="{% url 'gastos_varios_lista' %}" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3></h3>
+
+                        <p>Facturación</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-cash-register"></i>
+                    </div>
+                    <a href="{% url 'gastos_varios_lista' %}" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success ">
+                    <div class="inner">
+                        <h3></h3>
+                        <p>Inventario</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-box-open"></i>
+                    </div>
+                    <a href="{% url 'inventario_lista' %}" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+        </div>
+        <div class="row">
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-info">
+                    <div class="inner">
+                        <h3></h3>
+                        <p>Rendimiento Diario</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-coins"></i>
+                    </div>
+                    <a href="{% url 'rendimiento' %}" class="small-box-footer">Más info<i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-danger">
+                    <div class="inner">
+                        <h3></h3>
+
+                        <p>Pedidos GYE</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-money-check-alt"></i>
+                    </div>
+                    <a href="{% url 'pedidos_lista' %}" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-warning">
+                    <div class="inner">
+                        <h3></h3>
+
+                        <p>Reportes del sistema</p>
+                    </div>
+                    <div class="icon">
+                        <i class="far fa-chart-bar"></i>
+                    </div>
+                    <a href="{% url 'dashboard_reportes' %}" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+            <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-success ">
+                    <div class="inner">
+                        <h3></h3>
+                        <p>Productos</p>
+                    </div>
+                    <div class="icon">
+                        <i class="fas fa-dolly"></i>
+                    </div>
+                    <a href="{% url 'producto_lista' %}" class="small-box-footer">Más info<i
+                            class="fas fa-arrow-circle-right"></i></a>
+                </div>
+            </div>
+            <!-- ./col -->
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block scripts %}
+
+
+
+
+{% for message in messages %}
+{% if message.tags == "error" %}
+<script>
+Swal.fire({
+  icon: 'error',
+  title: 'Error...',
+  text:  '{{ message|escape }}',
+
+})
+</script>
+{% endif %}
+{% endfor %}
+
+{% endblock %}
+

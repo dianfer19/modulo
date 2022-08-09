@@ -1,0 +1,9 @@
+{% extends "delete.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% block personalizaMensaje %}
+<div class="alert alert-warning alert-dismissible">
+    <h5><i class="icon fas fa-ban"></i> Notificación!</h5>
+    ¿Estas seguro de Generar Pedidos del inventario?
+</div>
+{% endblock %}

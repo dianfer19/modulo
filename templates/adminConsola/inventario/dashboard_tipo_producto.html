@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% block titulo %}Erp-Dbjsystem{% endblock %}
+{% block title %}Mantenimiento de Tipos de Producto{% endblock %}
+{% block Css %}
+  <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+{% endblock %}
+{% block content %}
+{% load bootstrap5 %}
+<div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">En esta opción podrá añadir editar eliminar los tipo de productos</h3>
+              </div>
+                {% for message in messages %}
+                     {% if message.tags == "error" %}
+                        <div class="alert alert-danger alert-dismissible">
+                                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                  <h5><i class="icon fas fa-ban"></i>  {{ message }} !</h5>
+                         </div>
+                     {% else %}
+                         <div class="alert alert-info alert-dismissible bg-primary">
+                                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                  <h5><i class="icon fas fa-check"></i>  {{ message }} !</h5>
+                         </div>
+                     {% endif %}
+                {% endfor %}
+              <!-- /.card-header -->
+              <div class="card-body">
+                    <table  id="tablaMant" class="table display table-bordered table-striped" >
+                  <thead>
+                  <tr>
+                    <th>#
+                         {% if tipo.count <= 0 %}
+                            <button type="button"  class="btn btn-default bg-primary" data-toggle="modal" data-target="#modal-lg">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        {% endif %}
+                    </th>
+                    <th>Descripcion</th>
+                    <th style="text-align:center">Estado</th>
+                    <th class="d-print-none" style="text-align:center">
+                        {% if tipo.paginator.count <= 0 %}
+                        <button type="button"  class="btn btn-default bg-primary" data-toggle="modal" data-target="#modal-lg">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                        {% endif %}
+                        Acción
+                    </th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                   {% for item in tipo %}
+                      <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{ item.descripcion }}</td>
+                        <td style="text-align:center">
+                            <input type="checkbox" disabled="true" data-on="Activo"   {% if item.estado %}checked {% endif %} data-off="Inactivo."  data-toggle="toggle">
+                        </td>
+                        <td style="text-align:center" >
+                            <form id="updtipo{{ item.id }}" name="mant" method="POST" action="{% url 'mantenimiento_tipo' %}" enctype="multipart/form-data">
+                                       {% csrf_token %}
+                                <button type="button"  class="btn btn-default bg-primary" data-toggle="modal" data-target="#modal-lg">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                                <button type="button"  class="btn btn-default bg-warning" data-toggle="modal" data-target="#modal-lg{{ item.id }}">
+                                       <i class="fas fa-edit"></i>
+                                    </button>
+                                <input type="hidden" name="id_tipo" value="{{ item.id }}" >
+                                <input type="hidden" name="descripcion" value="{{ item.descripcion }}" >
+                                <button  name="Delete" type="submit" class="btn btn-default bg-danger">
+                                   <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+
+                      </tr>
+                   </form>
+                    {% endfor %}
+                  </tbody>
+
+                </table>
+                  {% for item in tipo %}
+                  <form  name="mant" method="POST" action="{% url 'mantenimiento_tipo' %}" onsubmit="$('#cargando').modal('show');" enctype="multipart/form-data">
+                      {% csrf_token %}
+                      <input type="hidden" name="id_tipo" value="{{ item.id }}" >
+                      <div class="modal fade" id="modal-lg{{ item.id }}">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                        <div class="row" style="text-align:left">
+                                          <!-- left column -->
+                                            <div class="col-md-12">
+                                                <div class="card card-primary p-0">
+                                                    <div class="card-header">
+                                                        <h3 class="card-title">Modificación de Tipo de Producto</h3>
+                                                    </div>
+                                                 <!-- /.card-header -->
+                                                    <div class="card-body">
+                                                      <div class="form-group">
+                                                        <label >Descripción</label>
+                                                        <input  name="descripcion" class="form-control form-control-lg" value="{{ item.descripcion }}" type="text" placeholder="Descripción">
+                                                      </div>
+                                                       <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" title="Estado" {% if item.estado %}checked {% endif %}
+                                                               class="custom-control-input" name="estado" id="estado{{ item.id }}" >
+                                                        <label for="estado{{ item.id }}" class="custom-control-label">Estado</label>
+                                                      </div>
+                                                </div>
+                                                <!-- /.card-body -->
+                                                    <div class="modal-footer ">
+                                                      <button type="submit" name="Update"  class="btn btn-primary">Guardar</button>
+                                                      <button type="button" class="btn bg-danger" data-dismiss="modal">Cerrar</button>
+                                                    </div>
+                                                </div>
+                                          </div>
+                                   </div>
+                              </div>
+                              <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+                      </div>
+                  </form>
+                  {% endfor %}
+                  <form  method="POST" action="{% url 'mantenimiento_tipo' %}" onsubmit="$('#cargando').modal('show');" enctype="multipart/form-data">
+                       {% csrf_token %}
+                      <div class="modal fade" id="modal-lg">
+                                        <div class="modal-dialog modal-lg">
+                                          <div class="modal-content">
+                                               <div class="row" style="text-align:left">
+                                                  <!-- left column -->
+                                                  <div class="col-md-12">
+                                                    <div class="card card-primary p-0">
+                                                  <div class="card-header">
+                                                    <h3 class="card-title">Registro de Tipo de Producto</h3>
+                                                  </div>
+                                                     <!-- /.card-header -->
+                                                    <div class="card-body">
+                                                          <div class="form-group">
+                                                            <label  >Descripción</label>
+                                                            <input name="descripcion" class="form-control form-control-lg" value=""  type="text" placeholder="Descripción">
+                                                          </div>
+                                                          <div class="custom-control custom-checkbox">
+                                                            <input type="checkbox" title="Estado" {% if item.estado %}checked {% endif %}
+                                                                   class="custom-control-input" name="estado" id="estado" >
+                                                            <label for="estado" class="custom-control-label">Estado</label>
+                                                          </div>
+                                                    </div>
+                                            <!-- /.card-body -->
+                                            <div class="modal-footer ">
+                                                <button type="submit"  name="Add" class="btn btn-primary">Guardar</button>
+                                                <button type="button" class="btn bg-danger" data-dismiss="modal">Cerrar</button>
+                                            </div>
+                                             </div>
+                                                  </div>
+                                               </div>
+
+                                          </div>
+                                          <!-- /.modal-content -->
+                                        </div>
+                                        <!-- /.modal-dialog -->
+                                    </div>
+                  </form>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+<!--    modal loading onsubmit="$('#cargando').modal('show');"-->
+    <div id="cargando" class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+           <div class="text-center">
+                  <button class="btn btn-warning" type="button" disabled>
+                      <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                      Procesando...
+                    </button>
+           </div>
+        </div>
+    </div>
+<!--fin modal-->
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<script src="{% static 'js/datatable/erp-datatable.js' %}"></script>
+{% endblock %}

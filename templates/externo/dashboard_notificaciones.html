@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% block titulo %}Tiendita{% endblock %}
+{% block title %}Dashboard Notificaciones{% endblock %}
+
+{% block content %}
+{% load bootstrap5 %}
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <!-- Small boxes (Stat box) -->
+        <div class="row">
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-info">
+              <div class="inner">
+                <h3>{{ orden_cant }}</h3>
+                <p>Tu carrito</p>
+              </div>
+              <div class="icon">
+                <i class="fas fa-shopping-cart"></i>
+              </div>
+              <a href="{% url 'carro_detalle' %}" class="small-box-footer">Más info<i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-success">
+              <div class="inner">
+                <h3>{{ productos.count }}</h3>
+
+                <p>Productos</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-document-text"></i>
+              </div>
+              <a href="{% url 'tienda' %}" class="small-box-footer">Más info<i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-warning">
+               <div class="inner">
+                <h3>{{ noti }}</h3>
+
+                <p>Notificaciones</p>
+              </div>
+              <div class="icon">
+                <i class="far fa-envelope"></i>
+              </div>
+              <a href="{% url 'dashboard_notificaciones' %}" class="small-box-footer">Más info<i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+          <div class="col-lg-3 col-6">
+            <!-- small box -->
+            <div class="small-box bg-danger">
+              <div class="inner">
+                <h3>{{ pedidos.count }}</h3>
+                <p>Tus pedidos</p>
+              </div>
+              <div class="icon">
+                <i class="ion ion-bag"></i>
+              </div>
+              <a href="{% url 'dashboard_pedidos' %}" class="small-box-footer">Más info<i class="fas fa-arrow-circle-right"></i></a>
+            </div>
+          </div>
+          <!-- ./col -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Listado de Notificaciones</h3>
+
+                <div class="card-tools">
+                  <div class="input-group input-group-sm" style="width: 150px;">
+
+                    <div class="input-group-append">
+                      <button type="submit" class="btn btn-default">
+                        <i class="fas fa-search"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body table-responsive p-0" style="height: 500px;">
+                <div class="row">
+                        <div class="col-xl-12 col-md-12 mb-4">
+                            <ul class="pagination pagination-sm pagination-lg">
+                                {% if orden.has_previous %}
+                                <li class="page-item"><a class="page-link"
+                                                         href="?page=1">&laquo;
+                                    Primera</a></li>
+                                <li class="page-item"><a class="page-link"
+                                                         href="?page={{ orden.previous_page_number }}">Anterior</a>
+                                </li>
+                                {% endif %}
+                                <li class="page-item disabled">
+                                    <span class="page-link">Pagina {{ orden.number }} de {{ orden.paginator.num_pages }}.</span>
+                                </li>
+                                {% if orden.has_next %}
+                                <li class="page-item"><a class="page-link"
+                                                         href="?page={{ orden.next_page_number }}">Siguiente</a>
+                                </li>
+                                <li class="page-item"><a class="page-link"
+                                                         href="?page={{ orden.paginator.num_pages }}">Ultima
+                                    &raquo;</a></li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+                <div class="row">
+                    <div class="col-xl-12 col-md-12 mb-4">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">#</th>
+                                <th scope="col">De</th>
+                                <th scope="col">Asunto</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Ver</th>
+                            </tr>
+                            </thead>
+                            <tbody >
+                            {% for item in notificaciones %}
+                            <tr>
+                                <td>{{forloop.counter}}</td>
+                                <td>{{ item.de }}</td>
+                                <td>{{ item.asunto  }}</td>
+                                <td> {{ item.fecha_registro|date:"m/d/Y"  }}</td>
+                                <td>
+
+                                        <button type="button" class="btn btn-default bg-primary" data-toggle="modal" data-target="#modal-lg{{ item.id }}">
+                                           <i class="fas fa-search"></i>
+                                        </button>
+                                          <!-- /.modal -->
+
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                         {% for item in notificaciones %}
+                        <form  method="post" action="{% url 'marcar_leido' %}" >
+                            {% csrf_token %}
+                                <div class="modal fade" id="modal-lg{{ item.id }}">
+                                            <div class="modal-dialog modal-lg">
+                                              <div class="modal-content">
+                                                 <!-- /.card-header -->
+                                                  <input type="hidden" name="id" value="{{ item.id }}" >
+                                                <div class="card-body p-0">
+                                                  <div class="mailbox-read-info">
+                                                    <h5>{{ item.asunto  }}</h5>
+                                                    <h6>{{ item.de  }}
+                                                      <span class="mailbox-read-time float-right">{{ item.fecha_registro|date:"d F, Y h:m"  }}</span></h6>
+                                                  </div>
+                                                  <!-- /.mailbox-read-info -->
+                                                  <div class="mailbox-controls with-border text-center">
+                                                    <div class="btn-group">
+                                                      <button type="submit" class="btn btn-default btn-sm" data-container="body" title="Marcar como leído">
+                                                        <i class="far fa-envelope-open"></i>
+                                                      </button>
+<!--                                                      <button type="button" class="btn btn-default btn-sm" data-container="body" title="Responder">-->
+<!--                                                        <i class="fas fa-reply"></i>-->
+<!--                                                      </button>-->
+
+                                                    </div>
+                                                  </div>
+                                                  <!-- /.mailbox-controls -->
+                                                  <div class="mailbox-read-message">
+                                                    <p>Estimad@ {{ user.razon_social }},</p>
+                                                    <p>{{ item.cuerpo  }}</p>
+                                                    <p>Gracias.<br></p>
+                                                  </div>
+                                                  <!-- /.mailbox-read-message -->
+                                                </div>
+                                                <div class="modal-footer justify-content-between">
+                                                  <button type="button" class="btn btn-primary" data-dismiss="modal">Cerrar</button>
+<!--                                                  <button type="button" class="btn btn-primary">Save changes</button>-->
+                                                </div>
+                                              </div>
+                                              <!-- /.modal-content -->
+                                            </div>
+                                            <!-- /.modal-dialog -->
+                                          </div>
+                            </form>
+                         {% endfor %}
+                    </div>
+                </div>
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+        </div>
+        <!-- /.row -->
+      </div><!-- /.container-fluid -->
+    </section>
+{% endblock %}
+{% block scripts %}
+<script>
+ {% for message in messages %}
+ $(document).Toasts('create', {
+   class: 'bg-warning',
+   title: 'Información de notificación',
+   subtitle: 'Cerrar',
+   body:'Notificación marcada como leída'
+})
+ {% endfor %}
+</script>
+
+{% endblock %}

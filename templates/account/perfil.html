@@ -1,0 +1,89 @@
+<!-- templates/signup.html -->
+{% extends "base.html" %}
+{% load static %}
+{% load sitetree %}
+{% block content %}
+
+    <div class="card">
+        <div class="card-body register-card-body">
+            <h3 class="login-box-msg">Actualizar Información del Usuario</h3>
+            <form method="post" novalidate="novalidate">
+                {% csrf_token %}
+ {% for message in messages %}
+                     {% if message.tags == "error" %}
+                        <div class="alert alert-danger alert-dismissible">
+                                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                  <h5><i class="icon fas fa-ban"></i>  {{ message }} !</h5>
+                         </div>
+                     {% else %}
+                         <div class="alert alert-info alert-dismissible bg-primary">
+                                  <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                                  <h5><i class="icon fas fa-check"></i>  {{ message }} !</h5>
+                         </div>
+                     {% endif %}
+                {% endfor %}
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                        <input type="text" class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+                                               name="razon_social" placeholder="Rázon Social o Nombre" value="{{ user.razon_social|default_if_none:''  }}">
+                                        <div class="input-group-append">
+                                            <div class="input-group-text">
+                                                <span class="fas fa-user-tie"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control {% if form.address.errors %}is-invalid{% endif %}"
+                                       name="address" placeholder="Dirección" value="{{ user.address|default_if_none:'' }}">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-map-marker"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-group mb-3">
+                                        <input type="email" class="form-control {% if form.reference.errors %}is-invalid{% endif %}"
+                                               name="reference" placeholder="Referencia de dirección" value="{{ user.reference|default_if_none:'' }}">
+                                        <div class=" input-group-append">
+                                            <div class="input-group-text">
+                                                <span class="fas fa-asterisk"></span>
+                                            </div>
+                                        </div>
+                                        {% if form.reference.errors %}
+                                        {% for error in form.reference.errors %}
+                                        <span class="is-invalid invalid-feedback">{{ error|escape }}</span>
+                                        {% endfor %}
+                                        {% endif %}
+                                    </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="input-group mb-3">
+                                <input required type="text" class="form-control {% if form.identificacion.errors %}is-invalid{% endif %}"
+                                       name="identificacion" placeholder="Cédula o Ruc" value="{{ user.identificacion|default_if_none:'' }}">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-id-badge"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control {% if form.cellphone.errors %}is-invalid{% endif %}"
+                                       name="cellphone" placeholder="Teléfono" value="{{ user.cellphone|default_if_none:'' }}">
+                                <div class="input-group-append">
+                                    <div class="input-group-text">
+                                        <span class="fas fa-mobile"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                    <button type="submit" class="btn btn-primary btn-block">Actualizar</button>
+                                </div>
+                        </div>
+                    </div>
+            </form>
+        </div>
+        <!-- /.form-box -->
+    </div><!-- /.card -->
+
+{% endblock %}

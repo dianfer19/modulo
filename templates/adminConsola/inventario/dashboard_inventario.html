@@ -1,0 +1,284 @@
+{% extends "base.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% block titulo %}Erp-Dbjsystem{% endblock %}
+{% block title %}Visiualización de Inventario{% endblock %}
+{% block Css %}
+  <link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+  <link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+{% endblock %}
+{% block content %}
+{% load bootstrap5 %}
+<div class="row">
+          <div class="col-12">
+
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">En esta opción podrá ver los inventarios de productos
+                    donde añadir entradas o salidas de mercancía </h3>
+              </div>
+              <!-- /.card-header -->
+              <div class="card-body">
+                <table id="tablaMant" class="table display table-bordered table-striped">
+                  <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Producto</th>
+                    <th>Método</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Total</th>
+                    <th style="text-align:center">Estado</th>
+                    <th style="text-align:center">Acción</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                   {% for item in inventario %}
+                      <tr data-original-title="999" data-container="body"
+                            data-toggle="tooltip" data-placement="bottom" title="{% if item.cantidad_total <= 10 %}Inventario con menos de 10 unidades {% elif  item.cantidad_total <= 20 %}Inventario Próximo a terminar{% endif %}"
+                          class="{% if item.cantidad_total <= 10 %}bg-danger {% elif  item.cantidad_total <= 20 %}bg-warning{% endif %}">
+                        <td>{{forloop.counter}}</td>
+                        <td>{{ item.id_producto.nombre }}</td>
+                        <td>{{ item.get_metodo_display }}</td>
+                        <td >{{ item.cantidad_total }}</td>
+                        <td>{{ item.precio_actual }}</td>
+                        <td>{{ item.total }}</td>
+                        <td style="text-align:center">
+                            {% if item.estado %}
+                                <input type="checkbox" disabled="true" data-on="Activo" checked data-off="Inactivo."  data-toggle="toggle">
+                            {% else %}
+                                <input type="checkbox" disabled="true"  data-on="Activo" data-off="Inactivo."  data-toggle="toggle">
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center">
+                            <form  method="post" action="#" >
+                                {% csrf_token %}
+                                <input type="hidden" name="id_inventario" value="{{ item.id }}" >
+                                <button type="button" class="btn btn-default bg-primary" data-toggle="modal" data-target="#modal-lg{{ item.id }}A">
+                                   <i class="fas fa-cart-plus"></i>
+                                </button>
+                                <button type="button" class="btn btn-default bg-danger" data-toggle="modal" data-target="#modal-lg{{ item.id }}I">
+                                   <i class="fas fa-cart-arrow-down"></i>
+                                </button>
+                                <button type="button" class="btn btn-default bg-info" data-toggle="modal" data-target="#modal-lg{{ item.id }}">
+                                   <i class="fas fa-eye"></i>
+                                </button>
+
+                            </form>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+
+                {% for item in inventario %}
+                  <form  method="POST" action="{% url 'mantenimiento_inventario' %}"  onsubmit="$('#cargando').modal('show');" enctype="multipart/form-data">
+                       {% csrf_token %}
+                      <!--                  Insert Entrada-->
+                      <div class="modal fade" id="modal-lg{{ item.id }}A">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                   <div class="row" style="text-align:left">
+                                      <!-- left column -->
+                                      <div class="col-md-12">
+                                        <div class="card card-primary p-0">
+                                      <div class="card-header">
+                                        <h3 class="card-title">Ingreso de Inventario {{ item.id_producto.nombre }} (Cant {{ item.cantidad_total }} / Total {{ item.total }})</h3>
+                                      </div>
+                                         <!-- /.card-header -->
+                                        <div class="card-body">
+                                           <div class="row">
+                                                <div class="col-md-6">
+                                                    <input type="hidden" name="id_inventario" value=" {{ item.id }}" >
+                                                    <input type="hidden" name="movimiento" value="E" >
+                                                    <input type="hidden" name="estado" value="true" >
+                                                    <input type="hidden" name="total" value="0" >
+                                                    <div class="form-group">
+                                                        <label>Descripción</label>
+                                                        <input required name="descripcion" class="form-control form-control-sm" value=""  type="text" placeholder="Descripción">
+                                                        <label>Fecha:</label>
+                                                        <input required name="fecha" class="form-control form-control-sm" value=""  type="date" placeholder="Fecha">
+                                                      </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label>Cantidad</label>
+                                                    <input type='number' class="form-control form-control-sm" name="cantidadEntrada" min="0.01" step='0.01' value='0.00' placeholder='0.00'  required/>
+                                                    <label>Precio</label>
+                                                     <input type='number' class="form-control form-control-sm" name="costoEntrada" min="0.01" step='0.01' value='0.00' placeholder='0.00' required />
+                                                </div>
+                                            </div>
+                                        </div>
+                                <!-- /.card-body -->
+                                <div class="modal-footer ">
+                                    <button type="submit"  name="Ingreso" class="btn btn-primary">Guardar</button>
+                                    <button type="button" class="btn bg-danger" data-dismiss="modal">Cerrar</button>
+                                </div>
+                                 </div>
+                                      </div>
+                                   </div>
+
+                              </div>
+                              <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+                        </div>
+                  </form>
+                  <form  method="POST" action="{% url 'mantenimiento_inventario' %}" onsubmit="$('#cargando').modal('show');" enctype="multipart/form-data">
+<!--                  Insert Salida-->
+                      {% csrf_token %}
+                      <div class="modal fade" id="modal-lg{{ item.id }}I">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                   <div class="row" style="text-align:left">
+                                      <!-- left column -->
+                                      <div class="col-md-12">
+                                        <div class="card card-primary p-0">
+                                      <div class="card-header">
+                                        <h3 class="card-title">Salida de Inventario {{ item.id_producto.nombre }} (Cant {{ item.cantidad_total }} / Total {{ item.total }})</h3>
+                                      </div>
+                                         <!-- /.card-header -->
+                                        <div class="card-body">
+                                           <div class="row">
+                                                <div class="col-md-6">
+                                                    <input type="hidden" name="id_inventario" value=" {{ item.id }}" >
+                                                    <input type="hidden" name="movimiento" value="S" >
+                                                    <input type="hidden" name="estado" value="true" >
+                                                    <input type="hidden" name="total" value="0" >
+                                                    <div class="form-group">
+                                                        <label>Descripción</label>
+                                                        <input required name="descripcion" class="form-control form-control-sm" value=""  type="text" placeholder="Descripción">
+                                                        <label>Fecha:</label>
+                                                        <input required name="fecha" class="form-control form-control-sm" value=""  type="date" placeholder="Fecha">
+                                                      </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label>Cantidad</label>
+                                                    <input type='number' class="form-control form-control-sm" name="cantidadSalida"
+                                                         value="1"  min="{%if item.cantidad_total != 0 %}1{%else%} {{ item.cantidad_total}} {%endif%}"
+                                                            max="{{ item.cantidad_total}}" id="id_cantidad{{ item.id }}"
+                                                           oninvalid="this.setCustomValidity('Producto con inventario({{ item.cantidad_total}})')" oninput="setCustomValidity('')"
+                                                             required/>
+                                                    <label>Precio</label>
+                                                     <input type='number' class="form-control form-control-sm" name="costoSalida" min="0.01" step='0.01' readonly value='{{ item.precio_actual }}' placeholder='0.00' required />
+                                                </div>
+                                            </div>
+                                        </div>
+                                <!-- /.card-body -->
+                                <div class="modal-footer ">
+                                    <button type="submit"  name="Ingreso" class="btn btn-primary">Guardar</button>
+                                    <button type="button" class="btn bg-danger" data-dismiss="modal">Cerrar</button>
+                                </div>
+                                 </div>
+                                      </div>
+                                   </div>
+
+                              </div>
+                              <!-- /.modal-content -->
+                            </div>
+                            <!-- /.modal-dialog -->
+                        </div>
+                  </form>
+<!--                  tablas modales-->
+                  <div class="modal fade" id="modal-lg{{ item.id }}">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                                 <div class="row" >
+                                      <!-- left column -->
+                                        <div class="col-md-12">
+                                            <div class="card card-primary p-0">
+                                                <div class="card-header">
+                                                    <h3 class="card-title">Inventario de {{ item.id_producto.nombre }}  (Cant {{ item.cantidad_total }} / Total {{ item.total }})</h3>
+                                                </div>
+                                             <!-- /.card-header -->
+                                                   <div class="card-body">
+                                                       <div class="table-responsive">
+                                                        <table id=""  class="table display table-bordered table-striped responsive">
+                                                          <thead>
+                                                              <tr>
+                                                                <th>#</th>
+                                                                <th>Descripción</th>
+                                                                <th>Método</th>
+                                                                <th>Cantidad</th>
+                                                                <th>Precio</th>
+                                                                <th>Total</th>
+                                                              </tr>
+                                                          </thead>
+                                                          <tbody>
+                                                            {% for detalle in detalle %}
+                                                                {% if detalle.id_inventario.id == item.id %}
+                                                                  <tr>
+                                                                    <td>{{ detalle.secuencial}}</td>
+                                                                    <td>{{ detalle.descripcion }}</td>
+                                                                    <td>{{ detalle.get_movimiento_display }}</td>
+                                                                    <td>
+                                                                        {% if detalle.movimiento == 'E' %}
+                                                                            {{ detalle.cantidadEntrada }}
+                                                                        {% else %}
+                                                                            {{ detalle.cantidadSalida }}
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td>
+                                                                        {% if detalle.movimiento == 'E' %}
+                                                                            {{ detalle.costoEntrada }}
+                                                                        {% else %}
+                                                                            {{ detalle.costoSalida }}
+                                                                        {% endif %}
+                                                                    </td>
+                                                                    <td>{{ detalle.total }}</td>
+                                                                  </tr>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                       </div>
+                                                   </div>
+                                            </div>
+                                            <!-- /.card-body -->
+                                                <div class="modal-footer ">
+
+                                                  <button type="button" class="btn bg-danger" data-dismiss="modal">Cerrar</button>
+                                                </div>
+                                            </div>
+                                </div>
+                                </div>
+                              </div>
+                              <!-- /.modal-content -->
+                     </div>
+                            <!-- /.modal-dialog -->
+                {% endfor %}
+              </div>
+              <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+          </div>
+          <!-- /.col -->
+        </div>
+<!--    modal loading onsubmit="$('#cargando').modal('show');"-->
+    <div id="cargando" class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+           <div class="text-center">
+                  <button class="btn btn-warning" type="button" disabled>
+                      <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                      Procesando...
+                    </button>
+           </div>
+        </div>
+    </div>
+<!--fin modal-->
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<script src="{% static 'js/datatable/erp-datatable.js' %}"></script>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "formulario.html" %}
+{% block scriptsForm %}
+$('#id_repuesto_propio').click(function(){
+    if($(this).is(':checked')){
+       document.getElementById("id_repuesto").disabled = true;
+    } else {
+       document.getElementById("id_repuesto").disabled = false;
+    }
+});
+{% endblock %}

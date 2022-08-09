@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% block titulo %}Tiendita{% endblock %}
+{% block title %}Resultado{% endblock %}
+
+{% block content %}
+{% load bootstrap5 %}
+
+<div class="row">
+    <div class="col-xl-12 col-md-12 mb-4">
+        <ul class="pagination pagination-sm pagination-lg">
+            {% if producto_list.has_previous %}
+            <li class="page-item"><a class="page-link" href="?arancel={{ arancel }}&page=1">&laquo; Primera</a></li>
+            <li class="page-item"><a class="page-link"
+                                     href="?arancel={{ arancel }}&page={{ producto_list.previous_page_number }}">Anterior</a>
+            </li>
+            {% endif %}
+            <li class="page-item disabled">
+                <span class="page-link">Pagina {{ producto_list.number }} de {{ producto_list.paginator.num_pages }}.</span>
+            </li>
+            {% if producto_list.has_next %}
+            <li class="page-item"><a class="page-link"
+                                     href="?arancel={{ arancel }}&page={{ producto_list.next_page_number }}">Siguiente</a>
+            </li>
+            <li class="page-item"><a class="page-link"
+                                     href="?arancel={{ arancel }}&page={{ producto_list.paginator.num_pages }}">Ultima
+                &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </div>
+    {% for item in producto_list %}
+    <!-- Profile Image -->
+    <div class="card card-primary card-outline" style="margin-right: auto; margin-left: auto; min-width: 290px !important">
+        <div class="card-body box-profile">
+            <form id="{{ item.id }}" class="formAgregar" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="producto_id" value="{{ item.id }}" >
+                <div class="text-center">
+                    <img class="profile-user-img img-fluid img" style="height: 100px !important;"
+                         src="{{ruta}}{{ item.imagen}}"
+                         alt="User profile picture">
+                </div>
+
+                <h3 class="profile-username text-center">{{ item.nombre|upper }}</h3>
+                <input type="hidden" name="nombre" value="{{ item.nombre|upper }}" >
+                <p class="text-muted text-center"> {{ item.descripcion|upper}}</p>
+
+                <ul class="list-group list-group-unbordered mb-3">
+                    <li class="list-group-item">
+                        <b>Precio</b> <a class="float-right"> {{ item.precio}}</a>
+                    </li>
+                    <li class="list-group-item">
+                        <b>Iva</b>
+                        <a class="float-right" >
+                            {%if item.iva == True %}
+                            0.12
+                            {%else%}
+                            0.00
+                            {%endif%}
+                        </a>
+                    </li>
+                    <div class="form-group has-info">
+                        <label for="id_cantidad{{ item.id }}">Cantidad:</label>
+                        <input type="number" name="cantidad" value="1" class="form-control input-number" min="{%if item.tiempo_caducidad != 0 %}1{%else%} {{ item.tiempo_caducidad}} {%endif%}"
+                               max="{{ item.tiempo_caducidad}}" id="id_cantidad{{ item.id }}"
+                               oninvalid="this.setCustomValidity('Producto con inventario({{ item.tiempo_caducidad}})')" oninput="setCustomValidity('')">
+                    </div>
+                </ul>
+                <button type="button" name="agregar" class="btn btn-primary btn-block"><b>Agregar al carrito</b></button>
+            </form>
+        </div>
+        <!-- /.card-body -->
+    </div>
+
+    {% endfor %}
+<!--    modal loading-->
+<!--    modal loading onsubmit="$('#cargando').modal('show');"-->
+    <div id="cargando" class="modal fade bd-example-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+        <div class="modal-dialog modal-sm">
+           <div class="text-center">
+                  <button class="btn btn-warning" type="button" disabled>
+                      <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                      Procesando...
+                    </button>
+           </div>
+        </div>
+    </div>
+<!--fin modal-->
+<!--fin modal-->
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    var CSRF_TOKEN = '{{ csrf_token }}';
+</script>
+<script src="{% static 'js/jsonView/jsonView.js' %}"></script>
+{% endblock %}

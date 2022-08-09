@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+<!-- cargar static ruta -->
+{% load static %}
+{% block titulo %} {{NombreApp}}{% endblock %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block Css %}
+<link rel="stylesheet" href="{% static 'plugins/datatables-bs4/css/dataTables.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/datatables-responsive/css/responsive.bootstrap4.min.css' %}">
+<link rel="stylesheet" href="{% static 'plugins/datatables-buttons/css/buttons.bootstrap4.min.css' %}">
+{% endblock %}
+{% block content %}
+{% load bootstrap5 %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Listado de Clientes para su mantenimiento (agragar,editar y eliminar)</h3>
+            </div>
+            {% for message in messages %}
+            {% if message.tags == "error" %}
+            <div class="alert alert-danger alert-dismissible">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h5><i class="icon fas fa-ban"></i> {{ message }} !</h5>
+            </div>
+            {% else %}
+            <div class="alert alert-info alert-dismissible bg-primary">
+                <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                <h5><i class="icon fas fa-check"></i> {{ message }} !</h5>
+            </div>
+            {% endif %}
+            {% endfor %}
+            <!-- /.card-header -->
+            <div class="card-body">
+                <table id="tablaMant" class="table display table-bordered table-striped">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>CI</th>
+                        <th>Razón Social</th>
+                        <th>Correo</th>
+                        <th>Teléfono</th>
+                        <th>Ciudad</th>
+                        <th>Dirección</th>
+                        <th style="text-align:center">Estado</th>
+                        <th class="d-print-none" style="text-align:center">
+                            {% if tipo.paginator.count <= 0 %}
+                            <button type="button" class="btn btn-default bg-primary" data-toggle="modal"
+                                    data-target="#modal-lg">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                            {% endif %}
+                            Acción
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in lista %}
+                    <tr>
+                        <td>{{forloop.counter}}</td>
+                        <td>{{ item.identificacion}}</td>
+                        <td>{{ item.razon_social }}</td>
+                        <td>{{ item.email }}</td>
+                        <td>{{ item.telefono }}</td>
+                        <td>{{ item.ciudad }}</td>
+                        <td>{{ item.direccion }}</td>
+                        <td style="text-align:center">
+                            <input type="checkbox" disabled="true" data-on="Activo" {% if item.estado %}checked {% endif%} data-off="Inactivo." data-toggle="toggle">
+                        </td>
+                        <td style="text-align:center">
+                                <a class="btn btn-default bg-primary"  href="{{ nuevo }}" >
+                                    <i class="fas fa-plus"></i>
+                                </a>
+                                <a  class="btn btn-default bg-warning"  href="{% url 'cliente_modificacion' item.id %}">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <input type="hidden" name="id_tipo" value="{{ item.id }}">
+                                <input type="hidden" name="descripcion" value="{{ item.descripcion }}">
+
+                                <a  class="btn btn-default bg-danger"  href="{% url 'cliente_eliminacion' item.id %}">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+                    </tbody>
+
+                </table>
+                <a  href="{{ nuevo }}" class="btn btn-primary" data-dismiss="modal">Nuevo Registro</a>
+
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+    <!-- /.col -->
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-bs4/js/dataTables.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/dataTables.responsive.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-responsive/js/responsive.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/dataTables.buttons.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.bootstrap4.min.js' %}"></script>
+<script src="{% static 'plugins/jszip/jszip.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/pdfmake.min.js' %}"></script>
+<script src="{% static 'plugins/pdfmake/vfs_fonts.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.html5.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.print.min.js' %}"></script>
+<script src="{% static 'plugins/datatables-buttons/js/buttons.colVis.min.js' %}"></script>
+<script src="{% static 'js/datatable/erp-datatable.js' %}"></script>
+<script type="aplication/javascript">
+
+</script>
+{% endblock %}
